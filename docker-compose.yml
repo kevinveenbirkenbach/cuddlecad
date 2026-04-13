@@ -1,0 +1,7 @@
+services:
+  cuddlecad:
+    build: .
+    container_name: cuddlecad
+    ports:
+      - "8000:8000"
+    restart: unless-stopped

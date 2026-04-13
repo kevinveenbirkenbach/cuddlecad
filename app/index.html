@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CuddleCAD</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar left-panel">
+        <div class="brand-card">
+          <img src="/static/assets/duck-dozer.svg" alt="Niedliches Baustellen-Entlein" class="mascot" />
+          <div>
+            <p class="eyebrow">kleine web-werkstatt</p>
+            <h1>CuddleCAD</h1>
+            <p class="subcopy">3D bauen wie mit Spielzeugbausteinen – simpel, freundlich, exportierbar.</p>
+          </div>
+        </div>
+
+        <section class="panel">
+          <h2>7 Werkzeuge</h2>
+          <div class="tools" id="toolButtons">
+            <button class="tool active" data-tool="addCube">1. Wuerfel</button>
+            <button class="tool" data-tool="addSphere">2. Kugel</button>
+            <button class="tool" data-tool="addCylinder">3. Zylinder</button>
+            <button class="tool" data-tool="move">4. Verschieben</button>
+            <button class="tool" data-tool="rotate">5. Drehen</button>
+            <button class="tool" data-tool="scale">6. Skalieren</button>
+            <button class="tool danger" data-tool="delete">7. Loeschen</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Aktionen</h2>
+          <div class="action-grid">
+            <button id="exportObj">Export OBJ</button>
+            <button id="exportStl">Export STL</button>
+            <button id="resetScene">Neu anfangen</button>
+          </div>
+          <p class="hint">Tipp: neue Formen landen direkt in der Mitte und werden sofort ausgewaehlt.</p>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <div class="canvas-wrap">
+          <canvas id="viewport" width="1100" height="760"></canvas>
+          <div class="canvas-hud">
+            <span>Linksklick: Objekt waehlen</span>
+            <span>Mausrad: zoomen</span>
+            <span>Rechts ziehen: Kamera drehen</span>
+          </div>
+        </div>
+      </main>
+
+      <aside class="sidebar right-panel">
+        <section class="panel">
+          <h2>Objekte</h2>
+          <div id="objectList" class="object-list"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Werkzeugkasten</h2>
+          <div id="toolInspector" class="inspector"></div>
+        </section>
+
+        <section class="panel tiny">
+          <h2>Stil</h2>
+          <p>Warme Spielzeugfarben, einfache Formen, freundliche Buttons und grosse Regler.</p>
+        </section>
+      </aside>
+    </div>
+
+    <script type="module" src="/static/js/app.js"></script>
+  </body>
+</html>
