@@ -2,6 +2,8 @@
 
 *Eine Gutenacht-Geschichte für tapfere Windows-Nutzer, erzählt vom weisen Einhorn Glimmerhorn*
 
+![Das Abenteuer des Mojebu](assets/guide-hero.svg)
+
 ---
 
 Es war einmal, in einem fernen Land namens **Windows**, ein Schreiner namens **Mojebu**.

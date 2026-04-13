@@ -1,0 +1,256 @@
+<svg width="800" height="500" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Sky background -->
+  <rect width="800" height="500" rx="32" fill="#1A1040"/>
+
+  <!-- Stars -->
+  <circle cx="60" cy="40" r="2" fill="#FFF8DC" opacity="0.9"/>
+  <circle cx="130" cy="25" r="1.5" fill="#FFF8DC" opacity="0.7"/>
+  <circle cx="220" cy="55" r="2.5" fill="#FFF8DC" opacity="0.85"/>
+  <circle cx="310" cy="18" r="1.5" fill="#FFF8DC" opacity="0.6"/>
+  <circle cx="400" cy="35" r="2" fill="#FFF8DC" opacity="0.9"/>
+  <circle cx="490" cy="20" r="1.5" fill="#FFF8DC" opacity="0.75"/>
+  <circle cx="580" cy="48" r="2" fill="#FFF8DC" opacity="0.8"/>
+  <circle cx="670" cy="30" r="2.5" fill="#FFF8DC" opacity="0.7"/>
+  <circle cx="745" cy="55" r="1.5" fill="#FFF8DC" opacity="0.9"/>
+  <circle cx="85" cy="90" r="1.5" fill="#FFF8DC" opacity="0.5"/>
+  <circle cx="175" cy="80" r="2" fill="#FFF8DC" opacity="0.65"/>
+  <circle cx="350" cy="70" r="1.5" fill="#FFF8DC" opacity="0.8"/>
+  <circle cx="540" cy="75" r="2" fill="#FFF8DC" opacity="0.6"/>
+  <circle cx="720" cy="85" r="1.5" fill="#FFF8DC" opacity="0.75"/>
+
+  <!-- Moon -->
+  <circle cx="680" cy="70" r="42" fill="#FFF5C0"/>
+  <circle cx="698" cy="58" r="34" fill="#1A1040"/>
+
+  <!-- Ground -->
+  <ellipse cx="400" cy="470" rx="420" ry="60" fill="#0D2B1A"/>
+  <rect x="0" y="420" width="800" height="80" rx="0" fill="#0D2B1A"/>
+  <rect x="0" y="440" width="800" height="60" fill="#0A2415"/>
+
+  <!-- Grass tufts -->
+  <ellipse cx="80" cy="440" rx="35" ry="12" fill="#1A4A2E"/>
+  <ellipse cx="200" cy="438" rx="28" ry="10" fill="#1A4A2E"/>
+  <ellipse cx="380" cy="442" rx="40" ry="13" fill="#1A4A2E"/>
+  <ellipse cx="600" cy="439" rx="32" ry="11" fill="#1A4A2E"/>
+  <ellipse cx="730" cy="441" rx="25" ry="10" fill="#1A4A2E"/>
+
+  <!-- ===== TREES ===== -->
+  <!-- Tree left -->
+  <rect x="55" y="280" width="18" height="160" rx="6" fill="#5C3D1E"/>
+  <ellipse cx="64" cy="270" rx="42" ry="52" fill="#1B5C32"/>
+  <ellipse cx="64" cy="255" rx="30" ry="38" fill="#256B3A"/>
+
+  <!-- Tree right -->
+  <rect x="712" y="300" width="16" height="140" rx="6" fill="#5C3D1E"/>
+  <ellipse cx="720" cy="290" rx="38" ry="48" fill="#1B5C32"/>
+  <ellipse cx="720" cy="275" rx="26" ry="34" fill="#256B3A"/>
+
+  <!-- ===== MOJEBU's COMPUTER (laptop on a wooden bench) ===== -->
+  <!-- Bench -->
+  <rect x="470" y="370" width="280" height="20" rx="8" fill="#8B5E3C"/>
+  <rect x="490" y="388" width="16" height="50" rx="5" fill="#6B4423"/>
+  <rect x="714" y="388" width="16" height="50" rx="5" fill="#6B4423"/>
+
+  <!-- Laptop base -->
+  <rect x="500" y="320" width="220" height="52" rx="10" fill="#2F2A3B"/>
+  <!-- Laptop screen -->
+  <rect x="508" y="240" width="205" height="130" rx="10" fill="#2F2A3B"/>
+  <rect x="516" y="248" width="189" height="114" rx="7" fill="#1A1040"/>
+  <!-- CuddleCAD on screen -->
+  <rect x="516" y="248" width="189" height="114" rx="7" fill="#0D0820"/>
+  <!-- Browser bar -->
+  <rect x="520" y="252" width="181" height="14" rx="4" fill="#3A3550"/>
+  <circle cx="528" cy="259" r="3.5" fill="#F36C6C"/>
+  <circle cx="538" cy="259" r="3.5" fill="#FFC857"/>
+  <circle cx="548" cy="259" r="3.5" fill="#8DD6C3"/>
+  <!-- "localhost:8000" URL -->
+  <rect x="555" y="253" width="140" height="12" rx="3" fill="#4A4560"/>
+  <text x="625" y="262" font-family="monospace" font-size="7" fill="#C6A3FF" text-anchor="middle">localhost:8000</text>
+  <!-- Mini 3D scene on screen -->
+  <!-- Ground grid lines -->
+  <line x1="540" y1="340" x2="690" y2="310" stroke="#4A3D6A" stroke-width="0.8"/>
+  <line x1="540" y1="330" x2="690" y2="300" stroke="#4A3D6A" stroke-width="0.8"/>
+  <line x1="560" y1="348" x2="560" y2="295" stroke="#4A3D6A" stroke-width="0.8"/>
+  <line x1="610" y1="350" x2="610" y2="295" stroke="#4A3D6A" stroke-width="0.8"/>
+  <!-- Mini Brett on screen -->
+  <polygon points="570,320 640,310 660,318 590,328" fill="#FFC857" opacity="0.85"/>
+  <polygon points="570,320 590,328 590,324 570,316" fill="#E5A830" opacity="0.85"/>
+  <polygon points="640,310 660,318 660,314 640,306" fill="#D4941A" opacity="0.85"/>
+  <!-- Corner handles on Brett -->
+  <circle cx="570" cy="320" r="3.5" fill="#8AB5FF"/>
+  <circle cx="640" cy="310" r="3.5" fill="#8AB5FF"/>
+  <circle cx="660" cy="318" r="3.5" fill="#FFC857"/>
+  <circle cx="590" cy="328" r="3.5" fill="#8AB5FF"/>
+
+  <!-- Keyboard keys suggestion -->
+  <rect x="510" y="328" width="200" height="40" rx="6" fill="#252035"/>
+  <rect x="518" y="334" width="26" height="10" rx="3" fill="#3A3550"/>
+  <rect x="548" y="334" width="26" height="10" rx="3" fill="#3A3550"/>
+  <rect x="578" y="334" width="26" height="10" rx="3" fill="#3A3550"/>
+  <rect x="608" y="334" width="26" height="10" rx="3" fill="#3A3550"/>
+  <rect x="638" y="334" width="26" height="10" rx="3" fill="#3A3550"/>
+  <rect x="528" y="348" width="160" height="10" rx="3" fill="#3A3550"/>
+
+  <!-- ===== EINHORN GLIMMERHORN ===== -->
+  <!-- Body -->
+  <ellipse cx="240" cy="340" rx="95" ry="70" fill="#F5E6FF"/>
+  <!-- Belly -->
+  <ellipse cx="245" cy="355" rx="60" ry="45" fill="#EDD6FF"/>
+  <!-- Legs -->
+  <rect x="165" y="380" width="22" height="60" rx="10" fill="#F5E6FF"/>
+  <rect x="198" y="385" width="22" height="55" rx="10" fill="#F5E6FF"/>
+  <rect x="270" y="382" width="22" height="58" rx="10" fill="#F5E6FF"/>
+  <rect x="304" y="378" width="22" height="62" rx="10" fill="#F5E6FF"/>
+  <!-- Hooves -->
+  <ellipse cx="176" cy="440" rx="13" ry="7" fill="#C6A3FF"/>
+  <ellipse cx="209" cy="440" rx="13" ry="7" fill="#C6A3FF"/>
+  <ellipse cx="281" cy="440" rx="13" ry="7" fill="#C6A3FF"/>
+  <ellipse cx="315" cy="440" rx="13" ry="7" fill="#C6A3FF"/>
+
+  <!-- Neck -->
+  <ellipse cx="275" cy="290" rx="34" ry="55" fill="#F5E6FF"/>
+
+  <!-- Head -->
+  <ellipse cx="295" cy="235" rx="48" ry="42" fill="#F5E6FF"/>
+  <!-- Snout -->
+  <ellipse cx="327" cy="250" rx="22" ry="16" fill="#EDD6FF"/>
+  <!-- Nostril -->
+  <ellipse cx="333" cy="254" rx="4" ry="3" fill="#C6A3FF"/>
+  <!-- Eye -->
+  <circle cx="300" cy="228" r="10" fill="white"/>
+  <circle cx="303" cy="230" r="6" fill="#2F2A3B"/>
+  <circle cx="305" cy="228" r="2" fill="white"/>
+  <!-- Eyelashes -->
+  <line x1="293" y1="220" x2="290" y2="215" stroke="#2F2A3B" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="299" y1="218" x2="298" y2="213" stroke="#2F2A3B" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="305" y1="219" x2="306" y2="214" stroke="#2F2A3B" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- HORN (golden, magical) -->
+  <polygon points="310,195 302,208 318,208" fill="#FFD700"/>
+  <polygon points="310,185 305,200 315,200" fill="#FFC200"/>
+  <polygon points="310,175 307,193 313,193" fill="#FFD700"/>
+  <polygon points="310,165 308,187 312,187" fill="#FFC200"/>
+  <polygon points="310,155 309,175 311,175" fill="#FFD700"/>
+  <!-- Horn spiral lines -->
+  <path d="M310 155 Q314 162 309 170 Q314 178 309 186 Q314 194 310 200" stroke="#E5A800" stroke-width="1.2" fill="none"/>
+
+  <!-- Horn glow -->
+  <circle cx="310" cy="170" r="18" fill="#FFD700" opacity="0.15"/>
+  <circle cx="310" cy="170" r="10" fill="#FFD700" opacity="0.2"/>
+
+  <!-- Mane -->
+  <path d="M270 205 Q250 220 255 250 Q248 270 258 295" stroke="#C6A3FF" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <path d="M270 205 Q248 222 254 252 Q246 272 257 297" stroke="#FF92AE" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M270 205 Q246 224 253 254 Q244 274 256 299" stroke="#FFC857" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+  <!-- Tail -->
+  <path d="M155 330 Q118 310 112 340 Q108 368 135 380" stroke="#C6A3FF" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <path d="M155 330 Q116 312 110 342 Q105 370 133 382" stroke="#FF92AE" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M155 330 Q114 314 108 344 Q102 372 131 384" stroke="#FFC857" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+  <!-- Sparkles around unicorn -->
+  <path d="M148 260 L151 250 L154 260 L164 263 L154 266 L151 276 L148 266 L138 263 Z" fill="#FFD700" opacity="0.9"/>
+  <path d="M330 190 L332 184 L334 190 L340 192 L334 194 L332 200 L330 194 L324 192 Z" fill="#C6A3FF" opacity="0.9"/>
+  <path d="M160 320 L162 315 L164 320 L169 322 L164 324 L162 329 L160 324 L155 322 Z" fill="#FF92AE" opacity="0.8"/>
+
+  <!-- ===== SMALL ANIMALS ===== -->
+
+  <!-- Squirrel (Zippy) top left of laptop -->
+  <ellipse cx="490" cy="312" rx="16" ry="13" fill="#C17D3C"/>
+  <circle cx="493" cy="302" r="10" fill="#C17D3C"/>
+  <ellipse cx="486" cy="299" r="5" fill="#E8A060"/>
+  <circle cx="495" cy="300" r="2.5" fill="#2F2A3B"/>
+  <circle cx="496" cy="299" r="1" fill="white"/>
+  <!-- Bushy tail -->
+  <path d="M476 310 Q460 295 468 282 Q476 270 484 278" stroke="#C17D3C" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M476 310 Q458 293 467 280 Q476 268 485 277" stroke="#D4955A" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Squirrel ear -->
+  <ellipse cx="489" cy="293" rx="4" ry="6" fill="#C17D3C" transform="rotate(-15 489 293)"/>
+
+  <!-- Butterfly (top, fluttering) -->
+  <!-- Wing 1 -->
+  <ellipse cx="404" cy="105" rx="28" ry="18" fill="#FF92AE" opacity="0.85" transform="rotate(-30 404 105)"/>
+  <!-- Wing 2 -->
+  <ellipse cx="436" cy="108" rx="28" ry="18" fill="#C6A3FF" opacity="0.85" transform="rotate(30 436 108)"/>
+  <!-- Wing 3 (lower) -->
+  <ellipse cx="408" cy="124" rx="18" ry="12" fill="#FFC857" opacity="0.8" transform="rotate(-20 408 124)"/>
+  <!-- Wing 4 (lower) -->
+  <ellipse cx="432" cy="126" rx="18" ry="12" fill="#8DD6C3" opacity="0.8" transform="rotate(20 432 126)"/>
+  <!-- Butterfly body -->
+  <ellipse cx="420" cy="115" rx="4" ry="12" fill="#2F2A3B"/>
+  <!-- Antennae -->
+  <line x1="418" y1="104" x2="410" y2="94" stroke="#2F2A3B" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="422" y1="104" x2="430" y2="94" stroke="#2F2A3B" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="410" cy="93" r="2.5" fill="#FF92AE"/>
+  <circle cx="430" cy="93" r="2.5" fill="#C6A3FF"/>
+
+  <!-- Owl (wise, on tree branch left) -->
+  <ellipse cx="64" cy="225" rx="22" ry="26" fill="#8B6914"/>
+  <ellipse cx="64" cy="222" rx="16" ry="18" fill="#C49A2A"/>
+  <!-- Owl eyes -->
+  <circle cx="57" cy="218" r="7" fill="white"/>
+  <circle cx="71" cy="218" r="7" fill="white"/>
+  <circle cx="58" cy="219" r="4" fill="#2F2A3B"/>
+  <circle cx="72" cy="219" r="4" fill="#2F2A3B"/>
+  <circle cx="59" cy="218" r="1.5" fill="white"/>
+  <circle cx="73" cy="218" r="1.5" fill="white"/>
+  <!-- Beak -->
+  <polygon points="64,224 60,229 68,229" fill="#E5A800"/>
+  <!-- Ears -->
+  <polygon points="50,210 53,198 60,208" fill="#8B6914"/>
+  <polygon points="78,210 75,198 68,208" fill="#8B6914"/>
+  <!-- Wings suggestion -->
+  <ellipse cx="45" cy="232" rx="12" ry="18" fill="#7A5A10" transform="rotate(-15 45 232)"/>
+  <ellipse cx="83" cy="232" rx="12" ry="18" fill="#7A5A10" transform="rotate(15 83 232)"/>
+  <!-- Branch -->
+  <rect x="20" y="246" width="88" height="10" rx="5" fill="#5C3D1E"/>
+
+  <!-- Deer (right side, peeking) -->
+  <ellipse cx="752" cy="360" rx="30" ry="45" fill="#C4824A"/>
+  <ellipse cx="752" cy="345" rx="20" ry="28" fill="#D49A62"/>
+  <!-- Deer head -->
+  <ellipse cx="752" cy="318" rx="18" ry="20" fill="#C4824A"/>
+  <ellipse cx="757" cy="325" rx="9" ry="7" fill="#D49A62"/>
+  <!-- Deer eye -->
+  <circle cx="745" cy="314" r="5" fill="white"/>
+  <circle cx="746" cy="315" r="3" fill="#2F2A3B"/>
+  <circle cx="747" cy="314" r="1" fill="white"/>
+  <!-- Deer nose -->
+  <ellipse cx="760" cy="327" rx="3.5" ry="2.5" fill="#2F2A3B"/>
+  <!-- Antlers -->
+  <path d="M745 300 Q738 285 730 278 Q725 272 728 266" stroke="#8B5E3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M738 288 Q732 282 728 278" stroke="#8B5E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M749 296 Q752 280 760 270 Q765 264 762 258" stroke="#8B5E3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M756 284 Q762 278 766 274" stroke="#8B5E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Deer spots -->
+  <circle cx="748" cy="348" r="4" fill="#D49A62"/>
+  <circle cx="762" cy="358" r="3" fill="#D49A62"/>
+  <circle cx="742" cy="362" r="3.5" fill="#D49A62"/>
+
+  <!-- ===== MAGICAL GLOW PATH from horn to laptop ===== -->
+  <path d="M322 165 Q420 100 500 260" stroke="#FFD700" stroke-width="2" fill="none" stroke-dasharray="6 4" opacity="0.5"/>
+  <path d="M322 165 Q418 98 498 258" stroke="#C6A3FF" stroke-width="1" fill="none" stroke-dasharray="4 6" opacity="0.4"/>
+
+  <!-- ===== TITLE TEXT ===== -->
+  <!-- Shadow -->
+  <text x="402" y="172" font-family="Georgia, serif" font-size="28" fill="#2F2A3B" text-anchor="middle" opacity="0.6">🦄 CuddleCAD – Das Abenteuer des Mojebu</text>
+  <!-- Main title -->
+  <text x="400" y="170" font-family="Georgia, serif" font-size="28" fill="#FFF8DC" text-anchor="middle">🦄 CuddleCAD – Das Abenteuer des Mojebu</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="198" font-family="Georgia, serif" font-size="14" fill="#C6A3FF" text-anchor="middle" opacity="0.9">Eine Gutenacht-Geschichte für tapfere Windows-Nutzer</text>
+
+  <!-- Bottom label on screen glow -->
+  <text x="611" y="298" font-family="monospace" font-size="8" fill="#8DD6C3" text-anchor="middle" opacity="0.8">python app.py ✓</text>
+
+  <!-- Fireflies / sparkles scattered -->
+  <circle cx="360" cy="390" r="2.5" fill="#FFD700" opacity="0.7"/>
+  <circle cx="390" cy="415" r="2" fill="#FFD700" opacity="0.5"/>
+  <circle cx="430" cy="395" r="2.5" fill="#FFD700" opacity="0.8"/>
+  <circle cx="345" cy="430" r="2" fill="#FFD700" opacity="0.6"/>
+
+  <!-- Frame / border -->
+  <rect x="2" y="2" width="796" height="496" rx="32" fill="none" stroke="#C6A3FF" stroke-width="2.5" opacity="0.4"/>
+
+</svg>
