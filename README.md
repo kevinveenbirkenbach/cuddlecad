@@ -10,6 +10,14 @@ Eine niedliche Browser-Webapp zum einfachen 3D-Modellieren mit 7 Werkzeugen:
 6. Skalieren
 7. Loeschen
 
+## Guide fuer Einsteiger
+
+![CuddleCAD Guide Vorschau](assets/guide-hero-merged.png)
+
+Wenn du CuddleCAD lieber Schritt fuer Schritt und in einer verspielten Geschichte einrichten moechtest, lies den illustrierten Guide fuer Windows-Einsteiger:
+
+[Zum Guide](guide.md)
+
 ## Schnellstart lokal
 
 ```bash
