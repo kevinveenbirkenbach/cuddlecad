@@ -234,12 +234,12 @@
 
   <!-- ===== TITLE TEXT ===== -->
   <!-- Shadow -->
-  <text x="402" y="172" font-family="Georgia, serif" font-size="28" fill="#2F2A3B" text-anchor="middle" opacity="0.6">🦄 CuddleCAD – Das Abenteuer des Mojebu</text>
+  <text x="402" y="128" font-family="Georgia, serif" font-size="28" fill="#2F2A3B" text-anchor="middle" opacity="0.6">🦄 CuddleCAD – Das Abenteuer des Mojebu</text>
   <!-- Main title -->
-  <text x="400" y="170" font-family="Georgia, serif" font-size="28" fill="#FFF8DC" text-anchor="middle">🦄 CuddleCAD – Das Abenteuer des Mojebu</text>
+  <text x="400" y="126" font-family="Georgia, serif" font-size="28" fill="#FFF8DC" text-anchor="middle">🦄 CuddleCAD – Das Abenteuer des Mojebu</text>
 
   <!-- Subtitle -->
-  <text x="400" y="198" font-family="Georgia, serif" font-size="14" fill="#C6A3FF" text-anchor="middle" opacity="0.9">Eine Gutenacht-Geschichte für tapfere Windows-Nutzer</text>
+  <text x="400" y="150" font-family="Georgia, serif" font-size="14" fill="#FFFFFF" text-anchor="middle" opacity="0.95">Eine Gutenacht-Geschichte für tapfere Windows-Nutzer</text>
 
   <!-- Bottom label on screen glow -->
   <text x="611" y="298" font-family="monospace" font-size="8" fill="#8DD6C3" text-anchor="middle" opacity="0.8">python app.py ✓</text>
