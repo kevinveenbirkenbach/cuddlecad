@@ -9,8 +9,13 @@ const palette = ['#FFC857', '#F9A66C', '#8DD6C3', '#8AB5FF', '#C6A3FF', '#FF92AE
 const state = {
   activeTool: 'addCube',
   selectedId: null,
+  selectedOperationId: null,
+  selectedCornerIdx: null,
+  hoveredCornerIdx: null,
+  dragCorner: null,
   objects: [],
   nextId: 1,
+  nextOpId: 1,
   camera: {
     yaw: Math.PI / 4,
     pitch: 0.45,
@@ -145,6 +150,20 @@ function projectPoint(worldPoint) {
   };
 }
 
+// Cast a ray from screen pixel through the scene and intersect with horizontal plane at worldY
+function rayAtY(screenX, screenY, worldY) {
+  const basis = getCameraBasis();
+  const rect = canvas.getBoundingClientRect();
+  const focal = Math.min(rect.width, rect.height) * 0.75;
+  const relX = (screenX - rect.width / 2) / focal;
+  const relY = -(screenY - rect.height / 2) / focal;
+  const dir = normalize(add(add(scale(basis.right, relX), scale(basis.up, relY)), basis.forward));
+  if (Math.abs(dir.y) < 0.0001) return null;
+  const t = (worldY - basis.position.y) / dir.y;
+  if (t <= 0) return null;
+  return add(basis.position, scale(dir, t));
+}
+
 function shadedColor(hex, amount) {
   const raw = hex.replace('#', '');
   const num = parseInt(raw, 16);
@@ -225,9 +244,15 @@ function cylinderMesh(segments = 18) {
   return { vertices, faces };
 }
 
+// Brett uses the same cube mesh, scaled flat (Pytha/PaletteCAT style)
+function brettMesh() {
+  return cubeMesh();
+}
+
 function primitiveMesh(type) {
   if (type === 'sphere') return sphereMesh();
   if (type === 'cylinder') return cylinderMesh();
+  if (type === 'brett') return brettMesh();
   return cubeMesh();
 }
 
@@ -236,13 +261,16 @@ function friendlyName(type) {
     cube: 'Wuerfel',
     sphere: 'Kugel',
     cylinder: 'Zylinder',
+    brett: 'Brett',
   }[type] || type;
 }
 
 function createObject(type) {
   const id = state.nextId++;
-  const baseScale = type === 'cylinder' ? vec(1, 1.3, 1) : vec(1, 1, 1);
-  return {
+  let baseScale = vec(1, 1, 1);
+  if (type === 'cylinder') baseScale = vec(1, 1.3, 1);
+  if (type === 'brett') baseScale = vec(2.5, 0.12, 1.5);
+  const obj = {
     id,
     name: `${friendlyName(type)} ${id}`,
     type,
@@ -251,6 +279,115 @@ function createObject(type) {
     rotation: vec(0, 0, 0),
     scale: baseScale,
   };
+  if (type === 'brett') obj.operations = [];
+  return obj;
+}
+
+// ---- Brett corner handles ----
+// 8 corners: local signs for each corner of the unit cube
+const CORNER_SIGNS = [
+  { x: -1, y: -1, z: -1 }, { x: 1, y: -1, z: -1 },
+  { x: 1, y:  1, z: -1 }, { x: -1, y:  1, z: -1 },
+  { x: -1, y: -1, z:  1 }, { x: 1, y: -1, z:  1 },
+  { x: 1, y:  1, z:  1 }, { x: -1, y:  1, z:  1 },
+];
+
+function getBrettCorners(obj) {
+  return CORNER_SIGNS.map((s) => ({
+    world: transformVertex(vec(s.x * 0.5, s.y * 0.5, s.z * 0.5), obj),
+    sign: s,
+  }));
+}
+
+function hitTestBrettCorner(obj, sx, sy) {
+  if (obj.type !== 'brett') return -1;
+  const corners = getBrettCorners(obj);
+  let best = -1, bestD = Infinity;
+  for (let i = 0; i < corners.length; i++) {
+    const sp = projectPoint(corners[i].world);
+    if (!sp) continue;
+    const d = Math.hypot(sp.x - sx, sp.y - sy);
+    if (d < 16 && d < bestD) { bestD = d; best = i; }
+  }
+  return best;
+}
+
+function drawBrettCorners(obj) {
+  if (obj.type !== 'brett' || obj.id !== state.selectedId) return;
+  const corners = getBrettCorners(obj);
+  corners.forEach((c, i) => {
+    const sp = projectPoint(c.world);
+    if (!sp) return;
+    const isSel = i === state.selectedCornerIdx;
+    const isHov = i === state.hoveredCornerIdx;
+    const r = isSel ? 11 : 8;
+
+    ctx.save();
+    ctx.shadowColor = 'rgba(113,88,164,0.35)';
+    ctx.shadowBlur = isSel ? 14 : 7;
+
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = isSel ? '#7158A4' : isHov ? '#FFC857' : '#8AB5FF';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, r * 0.38, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+
+    ctx.restore();
+
+    if (isSel) {
+      ctx.beginPath();
+      ctx.arc(sp.x, sp.y, r + 5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(113,88,164,0.38)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  });
+}
+
+// ---- Brett edges for kanteRunden ----
+const BRETT_EDGES = [
+  [vec(-0.5, 0.5, 0.5), vec(0.5, 0.5, 0.5)],
+  [vec(0.5, 0.5, 0.5), vec(0.5, 0.5, -0.5)],
+  [vec(0.5, 0.5, -0.5), vec(-0.5, 0.5, -0.5)],
+  [vec(-0.5, 0.5, -0.5), vec(-0.5, 0.5, 0.5)],
+  [vec(-0.5, 0.5, 0.5), vec(-0.5, -0.5, 0.5)],
+  [vec(0.5, 0.5, 0.5), vec(0.5, -0.5, 0.5)],
+  [vec(0.5, 0.5, -0.5), vec(0.5, -0.5, -0.5)],
+  [vec(-0.5, 0.5, -0.5), vec(-0.5, -0.5, -0.5)],
+];
+
+// ---- Operation management ----
+const OP_TOOL_NAMES = {
+  bohrung: 'Bohrung',
+  schnitt: 'Schnitt',
+  fraesung: 'Fraesung',
+  kanteRunden: 'Kante runden',
+};
+
+function addOperation(obj, type) {
+  if (!obj.operations) obj.operations = [];
+  const id = state.nextOpId++;
+  let op;
+  if (type === 'bohrung') {
+    op = { id, type, u: 0, v: 0, r: 0.08 };
+  } else if (type === 'schnitt') {
+    op = { id, type, u1: -0.4, v1: 0, u2: 0.4, v2: 0 };
+  } else if (type === 'fraesung') {
+    op = { id, type, u: 0, v: 0, w: 0.25, h: 0.2 };
+  } else if (type === 'kanteRunden') {
+    const usedEdges = new Set(obj.operations.filter((o) => o.type === 'kanteRunden').map((o) => o.edgeIdx));
+    let edgeIdx = 0;
+    while (usedEdges.has(edgeIdx) && edgeIdx < BRETT_EDGES.length) edgeIdx++;
+    op = { id, type, edgeIdx, radius: 0.03 };
+  }
+  if (op) {
+    obj.operations.push(op);
+    state.selectedOperationId = id;
+  }
 }
 
 function getSelectedObject() {
@@ -259,6 +396,9 @@ function getSelectedObject() {
 
 function selectObject(id) {
   state.selectedId = id;
+  state.selectedOperationId = null;
+  state.selectedCornerIdx = null;
+  state.hoveredCornerIdx = null;
   refreshObjectList();
   renderInspector();
   render();
@@ -274,6 +414,8 @@ function deleteSelected() {
   if (!state.selectedId) return;
   state.objects = state.objects.filter((obj) => obj.id !== state.selectedId);
   state.selectedId = state.objects.at(-1)?.id ?? null;
+  state.selectedOperationId = null;
+  state.selectedCornerIdx = null;
   refreshObjectList();
   renderInspector();
   render();
@@ -282,7 +424,11 @@ function deleteSelected() {
 function resetScene() {
   state.objects = [];
   state.selectedId = null;
+  state.selectedOperationId = null;
+  state.selectedCornerIdx = null;
+  state.hoveredCornerIdx = null;
   state.nextId = 1;
+  state.nextOpId = 1;
   refreshObjectList();
   renderInspector();
   render();
@@ -334,6 +480,38 @@ function controlField(label, path, min, max, step, value, displayValue, unit = '
   return wrap;
 }
 
+function controlFieldDirect(label, min, max, step, value, unit, onInput) {
+  const wrap = document.createElement('div');
+  wrap.className = 'field';
+
+  const lbl = document.createElement('label');
+  lbl.textContent = label;
+  wrap.appendChild(lbl);
+
+  const row = document.createElement('div');
+  row.className = 'range-row';
+  const input = document.createElement('input');
+  input.type = 'range';
+  input.min = String(min);
+  input.max = String(max);
+  input.step = String(step);
+  input.value = String(value);
+  const pill = document.createElement('div');
+  pill.className = 'value-pill';
+  pill.textContent = `${value.toFixed(2)}${unit}`;
+
+  input.addEventListener('input', (event) => {
+    const next = Number(event.target.value);
+    pill.textContent = `${next.toFixed(2)}${unit}`;
+    onInput(next);
+    render();
+  });
+
+  row.append(input, pill);
+  wrap.appendChild(row);
+  return wrap;
+}
+
 function emptyInspector(message) {
   inspector.innerHTML = `<div class="empty-state">${message}</div>`;
 }
@@ -342,10 +520,21 @@ function renderInspector() {
   inspector.innerHTML = '';
   const obj = getSelectedObject();
   const tool = state.activeTool;
+  const opTools = ['bohrung', 'schnitt', 'fraesung', 'kanteRunden'];
 
-  if (tool === 'addCube' || tool === 'addSphere' || tool === 'addCylinder') {
+  if (opTools.includes(tool)) {
+    if (!obj || obj.type !== 'brett') {
+      emptyInspector('Brett auswaehlen, dann Bearbeitung hinzufuegen.');
+      return;
+    }
+    renderOperationPanel(obj, tool);
+    return;
+  }
+
+  if (tool === 'addCube' || tool === 'addSphere' || tool === 'addCylinder' || tool === 'addBrett') {
+    const typeMap = { addCube: 'cube', addSphere: 'sphere', addCylinder: 'cylinder', addBrett: 'brett' };
+    const type = typeMap[tool];
     const button = document.createElement('button');
-    const type = tool === 'addCube' ? 'cube' : tool === 'addSphere' ? 'sphere' : 'cylinder';
     button.textContent = `${friendlyName(type)} einsetzen`;
     button.addEventListener('click', () => addShape(type));
     inspector.appendChild(button);
@@ -364,8 +553,20 @@ function renderInspector() {
 
   const header = document.createElement('div');
   header.className = 'empty-state';
-  header.innerHTML = `<strong>${obj.name}</strong><br>${friendlyName(obj.type)} in ${obj.color}`;
+  const opInfo = obj.type === 'brett' && obj.operations?.length ? ` · ${obj.operations.length} Bearb.` : '';
+  header.innerHTML = `<strong>${obj.name}</strong><br>${friendlyName(obj.type)}${opInfo}`;
   inspector.appendChild(header);
+
+  // Show selected corner info for brett
+  if (obj.type === 'brett' && state.selectedCornerIdx !== null) {
+    const corners = getBrettCorners(obj);
+    const c = corners[state.selectedCornerIdx];
+    const s = c.sign;
+    const cornerNote = document.createElement('div');
+    cornerNote.className = 'empty-state';
+    cornerNote.innerHTML = `<strong>Eckpunkt ${state.selectedCornerIdx + 1}</strong><br>X${s.x > 0 ? '+' : '−'} Y${s.y > 0 ? '+' : '−'} Z${s.z > 0 ? '+' : '−'}<br><small>Ziehen zum Verschieben</small>`;
+    inspector.appendChild(cornerNote);
+  }
 
   if (tool === 'move') {
     inspector.appendChild(controlField('X Position', 'position.x', -4, 4, 0.05, obj.position.x, obj.position.x.toFixed(2)));
@@ -398,6 +599,98 @@ function renderInspector() {
   }
 }
 
+function renderOperationPanel(obj, tool) {
+  const toolName = OP_TOOL_NAMES[tool];
+
+  const addBtn = document.createElement('button');
+  addBtn.textContent = `${toolName} hinzufuegen`;
+  addBtn.addEventListener('click', () => {
+    addOperation(obj, tool);
+    renderInspector();
+    render();
+  });
+  inspector.appendChild(addBtn);
+
+  const ops = (obj.operations || []).filter((o) => o.type === tool);
+  if (ops.length) {
+    const listHdr = document.createElement('div');
+    listHdr.className = 'empty-state';
+    listHdr.innerHTML = `<strong>${ops.length}× ${toolName}</strong>`;
+    inspector.appendChild(listHdr);
+
+    ops.forEach((op) => {
+      const row = document.createElement('div');
+      row.className = 'op-list-row';
+
+      const selBtn = document.createElement('button');
+      selBtn.textContent = `#${op.id}`;
+      if (op.id === state.selectedOperationId) selBtn.style.background = 'var(--butter)';
+      selBtn.addEventListener('click', () => {
+        state.selectedOperationId = op.id;
+        renderInspector();
+        render();
+      });
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'danger';
+      delBtn.style.padding = '12px 14px';
+      delBtn.textContent = '✕';
+      delBtn.addEventListener('click', () => {
+        obj.operations = obj.operations.filter((o) => o.id !== op.id);
+        if (state.selectedOperationId === op.id) state.selectedOperationId = null;
+        renderInspector();
+        render();
+      });
+
+      row.append(selBtn, delBtn);
+      inspector.appendChild(row);
+    });
+  }
+
+  const selOp = (obj.operations || []).find((o) => o.id === state.selectedOperationId && o.type === tool);
+  if (selOp) {
+    const hdr = document.createElement('div');
+    hdr.className = 'empty-state';
+    hdr.innerHTML = `<strong>${toolName} #${selOp.id}</strong>`;
+    inspector.appendChild(hdr);
+
+    if (selOp.type === 'bohrung') {
+      inspector.appendChild(controlFieldDirect('U (Breite)', -0.45, 0.45, 0.01, selOp.u, '', (v) => { selOp.u = v; }));
+      inspector.appendChild(controlFieldDirect('V (Tiefe)', -0.45, 0.45, 0.01, selOp.v, '', (v) => { selOp.v = v; }));
+      inspector.appendChild(controlFieldDirect('Radius', 0.01, 0.25, 0.005, selOp.r, '', (v) => { selOp.r = v; }));
+    } else if (selOp.type === 'schnitt') {
+      inspector.appendChild(controlFieldDirect('Start U', -0.48, 0.48, 0.01, selOp.u1, '', (v) => { selOp.u1 = v; }));
+      inspector.appendChild(controlFieldDirect('Start V', -0.48, 0.48, 0.01, selOp.v1, '', (v) => { selOp.v1 = v; }));
+      inspector.appendChild(controlFieldDirect('Ende U', -0.48, 0.48, 0.01, selOp.u2, '', (v) => { selOp.u2 = v; }));
+      inspector.appendChild(controlFieldDirect('Ende V', -0.48, 0.48, 0.01, selOp.v2, '', (v) => { selOp.v2 = v; }));
+    } else if (selOp.type === 'fraesung') {
+      inspector.appendChild(controlFieldDirect('U (Mitte)', -0.4, 0.4, 0.01, selOp.u, '', (v) => { selOp.u = v; }));
+      inspector.appendChild(controlFieldDirect('V (Mitte)', -0.4, 0.4, 0.01, selOp.v, '', (v) => { selOp.v = v; }));
+      inspector.appendChild(controlFieldDirect('Breite', 0.05, 0.9, 0.01, selOp.w, '', (v) => { selOp.w = v; }));
+      inspector.appendChild(controlFieldDirect('Tiefe', 0.05, 0.9, 0.01, selOp.h, '', (v) => { selOp.h = v; }));
+    } else if (selOp.type === 'kanteRunden') {
+      inspector.appendChild(controlFieldDirect('Radius', 0.005, 0.12, 0.005, selOp.radius, '', (v) => { selOp.radius = v; }));
+      const edgeLbl = document.createElement('div');
+      edgeLbl.className = 'field';
+      const edgeLabel = document.createElement('label');
+      edgeLabel.textContent = 'Kante';
+      const edgeNames = ['Vorne oben', 'Rechts oben', 'Hinten oben', 'Links oben', 'Vorne links', 'Vorne rechts', 'Hinten rechts', 'Hinten links'];
+      const sel = document.createElement('select');
+      sel.style.cssText = 'width:100%;padding:10px;border-radius:12px;border:2px solid var(--sky);background:#fff8ef;';
+      edgeNames.forEach((name, i) => {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = `${i}: ${name}`;
+        opt.selected = i === selOp.edgeIdx;
+        sel.appendChild(opt);
+      });
+      sel.addEventListener('change', (e) => { selOp.edgeIdx = Number(e.target.value); render(); });
+      edgeLbl.append(edgeLabel, sel);
+      inspector.appendChild(edgeLbl);
+    }
+  }
+}
+
 function refreshObjectList() {
   objectList.innerHTML = '';
   if (!state.objects.length) {
@@ -407,12 +700,14 @@ function refreshObjectList() {
   state.objects.forEach((obj) => {
     const btn = document.createElement('button');
     btn.className = `object-item ${obj.id === state.selectedId ? 'active' : ''}`;
-    btn.innerHTML = `<strong>${obj.name}</strong><span>${friendlyName(obj.type)} · Farbe ${obj.color}</span>`;
+    const opInfo = obj.type === 'brett' && obj.operations?.length ? ` · ${obj.operations.length} Bearb.` : '';
+    btn.innerHTML = `<strong>${obj.name}</strong><span>${friendlyName(obj.type)}${opInfo}</span>`;
     btn.addEventListener('click', () => selectObject(obj.id));
     objectList.appendChild(btn);
   });
 }
 
+// ---- Background ----
 function drawCloud(x, y, scaleValue) {
   ctx.save();
   ctx.translate(x, y);
@@ -490,6 +785,122 @@ function getRenderableTriangles() {
   return tris.sort((a, b) => b.avgDepth - a.avgDepth);
 }
 
+// ---- Brett operations in 3D ----
+function drawBrettOperations(obj) {
+  if (obj.type !== 'brett' || !obj.operations?.length) return;
+
+  obj.operations.forEach((op) => {
+    const isSel = op.id === state.selectedOperationId;
+
+    if (op.type === 'bohrung') {
+      const wCenter = transformVertex(vec(op.u, 0.5, op.v), obj);
+      const wEdge = transformVertex(vec(op.u + op.r, 0.5, op.v), obj);
+      const sc = projectPoint(wCenter);
+      const se = projectPoint(wEdge);
+      if (!sc || !se) return;
+      const r = Math.max(4, Math.hypot(se.x - sc.x, se.y - sc.y));
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(sc.x, sc.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = isSel ? 'rgba(255,146,174,0.3)' : 'rgba(255,146,174,0.15)';
+      ctx.fill();
+      ctx.strokeStyle = isSel ? '#FF92AE' : 'rgba(255,146,174,0.75)';
+      ctx.lineWidth = isSel ? 2.5 : 1.5;
+      ctx.stroke();
+      ctx.strokeStyle = isSel ? '#FF92AE' : 'rgba(255,146,174,0.5)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(sc.x - r, sc.y); ctx.lineTo(sc.x + r, sc.y);
+      ctx.moveTo(sc.x, sc.y - r); ctx.lineTo(sc.x, sc.y + r);
+      ctx.stroke();
+      ctx.restore();
+
+    } else if (op.type === 'schnitt') {
+      const w1 = transformVertex(vec(op.u1, 0.5, op.v1), obj);
+      const w2 = transformVertex(vec(op.u2, 0.5, op.v2), obj);
+      const s1 = projectPoint(w1);
+      const s2 = projectPoint(w2);
+      if (!s1 || !s2) return;
+
+      ctx.save();
+      ctx.setLineDash([8, 5]);
+      ctx.strokeStyle = isSel ? '#F36C6C' : 'rgba(243,108,108,0.7)';
+      ctx.lineWidth = isSel ? 3 : 2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(s1.x, s1.y);
+      ctx.lineTo(s2.x, s2.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      [s1, s2].forEach((sp) => {
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = isSel ? '#F36C6C' : 'rgba(243,108,108,0.7)';
+        ctx.fill();
+      });
+      ctx.restore();
+
+    } else if (op.type === 'fraesung') {
+      const corners = [
+        transformVertex(vec(op.u - op.w / 2, 0.5, op.v - op.h / 2), obj),
+        transformVertex(vec(op.u + op.w / 2, 0.5, op.v - op.h / 2), obj),
+        transformVertex(vec(op.u + op.w / 2, 0.5, op.v + op.h / 2), obj),
+        transformVertex(vec(op.u - op.w / 2, 0.5, op.v + op.h / 2), obj),
+      ];
+      const sc = corners.map(projectPoint);
+      if (sc.some((p) => !p)) return;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(sc[0].x, sc[0].y);
+      sc.slice(1).forEach((p) => ctx.lineTo(p.x, p.y));
+      ctx.closePath();
+      ctx.fillStyle = isSel ? 'rgba(141,214,195,0.35)' : 'rgba(141,214,195,0.18)';
+      ctx.fill();
+      ctx.strokeStyle = isSel ? '#8DD6C3' : 'rgba(141,214,195,0.75)';
+      ctx.lineWidth = isSel ? 2.5 : 1.5;
+      ctx.setLineDash([5, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+    } else if (op.type === 'kanteRunden') {
+      const pair = BRETT_EDGES[op.edgeIdx % BRETT_EDGES.length];
+      const w1 = transformVertex(pair[0], obj);
+      const w2 = transformVertex(pair[1], obj);
+      const s1 = projectPoint(w1);
+      const s2 = projectPoint(w2);
+      if (!s1 || !s2) return;
+
+      ctx.save();
+      ctx.strokeStyle = isSel ? '#C6A3FF' : 'rgba(198,163,255,0.65)';
+      ctx.lineWidth = isSel ? 6 : 4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(s1.x, s1.y);
+      ctx.lineTo(s2.x, s2.y);
+      ctx.stroke();
+      ctx.restore();
+
+      const mx = (s1.x + s2.x) / 2;
+      const my = (s1.y + s2.y) / 2;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(mx, my, 13, 0, Math.PI * 2);
+      ctx.fillStyle = isSel ? '#C6A3FF' : 'rgba(198,163,255,0.85)';
+      ctx.fill();
+      ctx.font = '700 9px Inter, sans-serif';
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`R${(op.radius * 100).toFixed(0)}`, mx, my);
+      ctx.textBaseline = 'alphabetic';
+      ctx.restore();
+    }
+  });
+}
+
 function drawObjects() {
   const triangles = getRenderableTriangles();
   triangles.forEach((tri) => {
@@ -504,6 +915,15 @@ function drawObjects() {
     ctx.stroke();
   });
 
+  // Draw operations and corner handles for bretter (on top of geometry)
+  state.objects.forEach((obj) => {
+    if (obj.type === 'brett') {
+      drawBrettOperations(obj);
+      drawBrettCorners(obj);
+    }
+  });
+
+  // Selection indicators
   state.objects.forEach((obj) => {
     const center = projectPoint(obj.position);
     if (!center) return;
@@ -558,25 +978,113 @@ canvas.addEventListener('mousedown', (event) => {
     state.pointer.lastY = event.clientY;
     return;
   }
+
+  const rect = canvas.getBoundingClientRect();
+  const sx = event.clientX - rect.left;
+  const sy = event.clientY - rect.top;
+
+  // Check brett corner handles first (always active when a brett is selected)
+  const selObj = state.objects.find((o) => o.id === state.selectedId);
+  if (selObj && selObj.type === 'brett') {
+    const ci = hitTestBrettCorner(selObj, sx, sy);
+    if (ci >= 0) {
+      state.selectedCornerIdx = ci;
+      const corners = getBrettCorners(selObj);
+      state.dragCorner = {
+        objId: selObj.id,
+        cornerIdx: ci,
+        sign: corners[ci].sign,
+        origPos: { ...selObj.position },
+        origScale: { ...selObj.scale },
+      };
+      canvas.style.cursor = 'grabbing';
+      renderInspector();
+      render();
+      return;
+    }
+  }
+
+  // Regular object selection
   const hit = findObjectByClick(event.clientX, event.clientY);
   if (hit) {
     selectObject(hit.id);
+  } else {
+    state.selectedCornerIdx = null;
+    renderInspector();
+    render();
   }
 });
 
 window.addEventListener('mouseup', () => {
+  if (state.dragCorner) {
+    state.dragCorner = null;
+    canvas.style.cursor = 'default';
+  }
   state.pointer.rotating = false;
 });
 
 window.addEventListener('mousemove', (event) => {
-  if (!state.pointer.rotating) return;
-  const dx = event.clientX - state.pointer.lastX;
-  const dy = event.clientY - state.pointer.lastY;
-  state.pointer.lastX = event.clientX;
-  state.pointer.lastY = event.clientY;
-  state.camera.yaw += dx * 0.01;
-  state.camera.pitch = clamp(state.camera.pitch + dy * 0.01, -1.2, 1.2);
-  render();
+  // Corner drag: resize brett via ray-plane intersection
+  if (state.dragCorner) {
+    const obj = state.objects.find((o) => o.id === state.dragCorner.objId);
+    if (obj) {
+      const rect = canvas.getBoundingClientRect();
+      const sx = event.clientX - rect.left;
+      const sy = event.clientY - rect.top;
+      const { sign, origPos, origScale } = state.dragCorner;
+
+      // Intersect ray with the Y-plane at the dragged corner's height
+      const cornerY = origPos.y + origScale.y / 2 * sign.y;
+      const hit = rayAtY(sx, sy, cornerY);
+      if (hit) {
+        // Opposite corner in XZ stays fixed
+        const oppX = origPos.x - origScale.x / 2 * sign.x;
+        const oppZ = origPos.z - origScale.z / 2 * sign.z;
+
+        const newScaleX = Math.abs(hit.x - oppX);
+        const newScaleZ = Math.abs(hit.z - oppZ);
+        if (newScaleX > 0.15) {
+          obj.scale.x = newScaleX;
+          obj.position.x = (hit.x + oppX) / 2;
+        }
+        if (newScaleZ > 0.15) {
+          obj.scale.z = newScaleZ;
+          obj.position.z = (hit.z + oppZ) / 2;
+        }
+        refreshObjectList();
+        renderInspector();
+        render();
+      }
+    }
+    return;
+  }
+
+  // Camera rotation
+  if (state.pointer.rotating) {
+    const dx = event.clientX - state.pointer.lastX;
+    const dy = event.clientY - state.pointer.lastY;
+    state.pointer.lastX = event.clientX;
+    state.pointer.lastY = event.clientY;
+    state.camera.yaw += dx * 0.01;
+    state.camera.pitch = clamp(state.camera.pitch + dy * 0.01, -1.2, 1.2);
+    render();
+    return;
+  }
+
+  // Hover detection for corner handles
+  const selObj = state.objects.find((o) => o.id === state.selectedId);
+  if (selObj && selObj.type === 'brett') {
+    const rect = canvas.getBoundingClientRect();
+    const sx = event.clientX - rect.left;
+    const sy = event.clientY - rect.top;
+    const ci = hitTestBrettCorner(selObj, sx, sy);
+    const prev = state.hoveredCornerIdx;
+    state.hoveredCornerIdx = ci >= 0 ? ci : null;
+    if (state.hoveredCornerIdx !== prev) {
+      canvas.style.cursor = ci >= 0 ? 'grab' : 'default';
+      render();
+    }
+  }
 });
 
 canvas.addEventListener('wheel', (event) => {
@@ -649,4 +1157,5 @@ renderInspector();
 resizeCanvas();
 addShape('cube');
 addShape('sphere');
+addShape('brett');
 setActiveTool('move');

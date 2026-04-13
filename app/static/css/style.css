@@ -143,6 +143,23 @@ label small {
   background: #ffe0de;
 }
 
+/* ---- Bearbeitungen button colors ---- */
+.op-bohrung { background: #ffe0ed; }
+.op-bohrung:hover { background: #ffc8df; }
+.op-bohrung.active { background: #FF92AE; color: #fff; }
+
+.op-schnitt { background: #ffe0de; }
+.op-schnitt:hover { background: #ffc8c5; }
+.op-schnitt.active { background: var(--tomato); color: #fff; }
+
+.op-fraesung { background: #d4f5ec; }
+.op-fraesung:hover { background: var(--mint); }
+.op-fraesung.active { background: #8DD6C3; color: #fff; }
+
+.op-kante { background: #ede5ff; }
+.op-kante:hover { background: #ddd0ff; }
+.op-kante.active { background: var(--berry); color: #fff; }
+
 .action-grid {
   grid-template-columns: 1fr;
 }
@@ -241,6 +258,12 @@ input[type="range"] {
 
 .tiny p {
   margin-bottom: 0;
+}
+
+.op-list-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
 }
 
 @media (max-width: 1280px) {

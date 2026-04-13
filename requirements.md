@@ -63,12 +63,12 @@ Cutlcat soll:
 
 Eckpunkte sind **interaktive Schaltflächen**:
 
-- [ ] sichtbar als Griffe
-- [ ] einzeln auswählbar
-- [ ] per Drag verschiebbar
-- [ ] Live-Update der Geometrie
-- [ ] visuelles Feedback (Highlight)
-- [ ] weiche, „cute" Darstellung
+- [x] sichtbar als Griffe
+- [x] einzeln auswählbar
+- [x] per Drag verschiebbar
+- [x] Live-Update der Geometrie
+- [x] visuelles Feedback (Highlight)
+- [x] weiche, „cute" Darstellung
 
 ---
 
@@ -76,18 +76,18 @@ Eckpunkte sind **interaktive Schaltflächen**:
 
 Muss unterstützen:
 
-- [ ] Bohrungen
-- [ ] Schnitte
-- [ ] Fräsungen
-- [ ] Kanten runden
+- [x] Bohrungen
+- [x] Schnitte
+- [x] Fräsungen
+- [x] Kanten runden
 
 Anforderungen:
 
-- [ ] einfach auswählbar
-- [ ] visuell sichtbar
-- [ ] editierbar
-- [ ] verschiebbar
-- [ ] CNC-ready strukturierbar
+- [x] einfach auswählbar
+- [x] visuell sichtbar
+- [x] editierbar
+- [x] verschiebbar
+- [x] CNC-ready strukturierbar
 
 ---
 

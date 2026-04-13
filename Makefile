@@ -12,6 +12,8 @@ start:
 stop:
 	docker compose down
 
+restart: stop setup start
+
 logs:
 	docker compose logs -f
 
